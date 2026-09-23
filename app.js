@@ -5,11 +5,13 @@ import UserMongo from "./mongo-db/user_mongo.js";
 import SessionMongo from "./mongo-db/session_mongo.js";
 import ProductMongo from "./mongo-db/product_mongo.js";
 import StockMovementMongo from "./mongo-db/stock_movement_mongo.js";
+import SaleMongo from "./mongo-db/sale_mongo.js";
 
 import UserService from "./services/user_service.js";
 import AuthService from "./services/auth_service.js";
 import ProductService from "./services/product_service.js";
 import StockMovementService from "./services/stock_movement_service.js";
+import SaleService from "./services/sale_service.js";
 
 import createAuthenticate from "./middlewares/authenticate.js";
 import notFoundHandler from "./middlewares/not_found_handler.js";
@@ -19,6 +21,7 @@ import createAuthRouter from "./api/auth_router.js";
 import createUserRouter from "./api/user_router.js";
 import createProductRouter from "./api/product_router.js";
 import createStockMovementRouter from "./api/stock_movement_router.js";
+import createSaleRouter from "./api/sale_router.js";
 
 const app = express();
 
@@ -40,6 +43,12 @@ const stockMovementService =
     ProductMongo,
     StockMovementMongo
   );
+
+const saleService = new SaleService(
+  ProductMongo,
+  SaleMongo,
+  StockMovementMongo
+);
 
 const authenticate =
   createAuthenticate(SessionMongo);
@@ -81,6 +90,14 @@ app.use(
   "/stock-movements",
   createStockMovementRouter(
     stockMovementService,
+    authenticate
+  )
+);
+
+app.use(
+  "/sales",
+  createSaleRouter(
+    saleService,
     authenticate
   )
 );
